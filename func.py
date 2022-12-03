@@ -11,16 +11,14 @@ def handler(ctx, data: io.BytesIO=None):
     signer = oci.auth.signers.get_resource_principals_signer()
     logging.getLogger().info("URI: " + ctx.RequestURL() )
     config = {
-        # update with your tenancy's OCID
-        "tenancy": "ocid1.tenancy.oc1..XXXXXXX",
-        # replace with the region you are using
-        "region": "ca-toronto-1"
+        "tenancy": "ocid1.tenancy.oc1..aaaaaaaat3g6mubuxwcl26ef5tve3gpoz3bnrueskq7ma2fyjlk3jiiinxea",
+        "region": "il-jerusalem-1"
     }
     try:
         object_storage = oci.object_storage.ObjectStorageClient(config, signer=signer)
         namespace = object_storage.get_namespace().data
         # update with your bucket name
-        bucket_name = "demo"
+        bucket_name = "assignment1"
         file_object_name = ctx.RequestURL()
         if file_object_name.endswith("/"):
             logging.getLogger().info("Adding index.html to reques URL " + file_object_name)

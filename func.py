@@ -14,7 +14,7 @@ def handler(ctx, data: io.BytesIO=None):
         "tenancy": "ocid1.tenancy.oc1..aaaaaaaat3g6mubuxwcl26ef5tve3gpoz3bnrueskq7ma2fyjlk3jiiinxea",
         "region": "il-jerusalem-1"
     }
-    if ctx.RequestURL().Method() == "GET":
+    if ctx.Method() == "GET":
         try:
             object_storage = oci.object_storage.ObjectStorageClient(config, signer=signer)
             namespace = object_storage.get_namespace().data

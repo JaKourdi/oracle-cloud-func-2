@@ -7,6 +7,13 @@ import pandas as pd
 import oci
 from fdk import response
 
+
+def check_if_name_exist(df, name):
+    if df['name'].isin([name]).any():
+        return False
+    return True
+
+
 # create, read, update, and delete (CRUD)
 allowed_endpoint = ['', 'read', 'create', 'update', 'delete', 'listall']
 csv_api_url = "https://objectstorage.il-jerusalem-1.oraclecloud.com/n/axr8cosciqjx/b/assignment2/o/db.csv"
@@ -54,6 +61,14 @@ def handler(ctx, data: io.BytesIO = None):
         # obj = object_storage.get_object(namespace, bucket_name, 'csv.html')
         new_record(ctx, data)
 
+    elif ctx.Method() == "PUT":
+        update_record(ctx, data)
+
+    elif ctx.Method == "DELETE":
+        delete_record(ctx)
+
+
+
     else:
         return response.Response(
             ctx, response_data="405  Method not allowed",
@@ -76,7 +91,7 @@ def error_500(ctx):
 
 def new_record(ctx, data):
     try:
-        name, department, birthday=read_data(data)
+        name, department, birthday = read_data(data)
         df = pd.read_csv(csv_api_url)
         new_row = {'name': name, 'department': department, 'birthday': birthday}
         df2 = df.append(new_row, ignore_index=True)
@@ -104,13 +119,26 @@ def new_record(ctx, data):
         error_500(ctx)
 
 
-def read_record():
-    return
+def read_record(ctx):
+    name = "John Smith"
+    df = pd.read_csv(csv_api_url)
+    if not check_if_name_exist(df, name):
+        return response.Response(
+            ctx, response_data="404 Person not found! try a diff name",
+            headers={"Content-Type": "text/plain"})
+    return response.Response(
+        ctx, response_data=json.dumps(
+            {"Message": "You found me",
+             "name": df.loc[df.name == name].name[0],
+             "department": df.loc[df.name == name].department[0],
+             "birthday": df.loc[df.name == name].birthday[0],
+             }, sort_keys=True, indent=4),
+        headers={"Content-Type": "application/json"})
 
 
 def update_record(ctx, data):
     try:
-        name, department, birthday=read_data(data)
+        name, department, birthday = read_data(data)
         df = pd.read_csv(csv_api_url)
         if not check_if_name_exist(df, name):
             return response.Response(
@@ -145,46 +173,16 @@ def update_record(ctx, data):
         error_500(ctx)
 
 
-def delete_record():
-    return
-
-
-def route(ctx):
-    m_method = ctx.Method()
-    if m_method == 'GET':
-        return
-    elif m_method == 'POST':
-        return
-    elif m_method == 'PUT':
-        return
-    elif m_method == 'DELETE':
-        return
-    else:
-        return error_500(ctx)
-
-
-def route(endpoint):
-    return
-
-
-def redirect(ctx):
-    m_method = ctx.Method()
-    if m_method == 'GET':
-        return
-    elif m_method == 'POST':
-        return
-    elif m_method == 'PUT':
-        return
-    elif m_method == 'DELETE':
-        return
-    else:
-        return error_500(ctx)
-
-
-def check_if_name_exist(df, name):
-    if df['name'].isin([name]).any():
-        return False
-    return True
+def delete_record(ctx):
+    df = pd.read_csv(csv_api_url)
+    df.drop(0, axis=0, inplace=True)
+    return response.Response(
+        ctx, response_data=json.dumps(
+            {
+                "Message": "deleted the first row"},
+            sort_keys=True, indent=4),
+        headers={"Content-Type": "application/json"}
+    )
 
 
 def read_data(data):

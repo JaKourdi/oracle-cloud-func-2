@@ -47,7 +47,7 @@ def handler(ctx, data: io.BytesIO = None):
         except (Exception) as e:
             error_500(ctx)
     elif ctx.Method() == "POST":
-        obj = object_storage.get_object(namespace, bucket_name, 'csv.html')
+        # obj = object_storage.get_object(namespace, bucket_name, 'csv.html')
         try:
             body = json.loads(data.getvalue())
             name = body.get("name")

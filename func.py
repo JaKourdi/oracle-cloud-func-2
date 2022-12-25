@@ -9,7 +9,7 @@ from fdk import response
 
 # create, read, update, and delete (CRUD)
 allowed_endpoint = ['', 'read', 'create', 'update', 'delete', 'listall']
-csv_api_url = "https://m7l2i2ximv4pqfi3xlea5yb53u.apigateway.il-jerusalem-1.oci.customer-oci.com/app2/getcsv"
+csv_api_url = "https://objectstorage.il-jerusalem-1.oraclecloud.com/n/axr8cosciqjx/b/assignment2/o/db.csv"
 
 config = {
     "tenancy": "ocid1.tenancy.oc1..aaaaaaaat3g6mubuxwcl26ef5tve3gpoz3bnrueskq7ma2fyjlk3jiiinxea",

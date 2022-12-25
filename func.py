@@ -115,7 +115,7 @@ def update_record(ctx, data):
         body = json.loads(data.getvalue())
         name = body.get("name")
         department = body.get("department")
-        birthday = body.get("birthday month")
+        birthday = body.get("birthday")
         df = pd.read_csv(csv_api_url)
 
         if not check_if_name_exist(df, name):

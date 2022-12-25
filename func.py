@@ -2,6 +2,9 @@ import io
 import json
 import logging
 import csv
+import pandas as pd
+
+
 
 import oci
 from fdk import response
@@ -55,9 +58,14 @@ def handler(ctx, data: io.BytesIO = None):
             birthday_month = body.get("birthday month")
         except (Exception, ValueError) as ex:
             print(str(ex))
+
+        obj = object_storage.get_object(namespace, bucket_name, 'db.csv')
+        data = pd.read_csv(obj.data.content)
+        data.get()
         return response.Response(
             ctx, response_data=json.dumps(
                 {"Message": "Hello {0}, you work at {1} and your birthday is {2}".format(name,department, birthday_month),
+                 "csv": data.to_string(),
                  "ctx.Config" : dict(ctx.Config()),
                  "ctx.Headers" : ctx.Headers(),
                  "ctx.AppID" : ctx.AppID(),

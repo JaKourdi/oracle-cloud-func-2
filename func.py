@@ -64,3 +64,21 @@ def error_500(ctx):
         ctx, response_data="500 Server error",
         headers={"Content-Type": "text/plain"}
     )
+
+
+
+#POST– This creates a new record in the database.
+# GET– This request reads information sourced from a database.
+# PUT– This updates an object.
+# DELETE– This removes a record from the database.
+def route(request_type):
+    if request_type == 'GET':
+        return
+    elif request_type == 'POST':
+        return
+    elif request_type == 'PUT':
+        return
+    elif request_type == 'DELETE':
+        return
+    else:
+        return error_500()

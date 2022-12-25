@@ -75,10 +75,7 @@ def error_500(ctx):
 
 def new_record(ctx, data):
     try:
-        body = json.loads(data.getvalue())
-        name = body.get("name")
-        department = body.get("department")
-        birthday = body.get("birthday")
+        name, department, birthday=read_data(data)
         df = pd.read_csv(csv_api_url)
         new_row = {'name': name, 'department': department, 'birthday': birthday}
         df2 = df.append(new_row, ignore_index=True)
@@ -112,12 +109,8 @@ def read_record():
 
 def update_record(ctx, data):
     try:
-        body = json.loads(data.getvalue())
-        name = body.get("name")
-        department = body.get("department")
-        birthday = body.get("birthday")
+        name, department, birthday=read_data(data)
         df = pd.read_csv(csv_api_url)
-
         if not check_if_name_exist(df, name):
             return response.Response(
                 ctx, response_data="404 Person not found! try a diff name",
@@ -191,3 +184,11 @@ def check_if_name_exist(df, name):
     if df['name'].isin([name]).any():
         return False
     return True
+
+
+def read_data(data):
+    body = json.loads(data.getvalue())
+    name = str(body.get("name"))
+    department = str(body.get("department"))
+    birthday = str(body.get("birthday"))
+    return name, department, birthday

@@ -19,6 +19,10 @@ def handler(ctx, data: io.BytesIO = None):
         "tenancy": "ocid1.tenancy.oc1..aaaaaaaat3g6mubuxwcl26ef5tve3gpoz3bnrueskq7ma2fyjlk3jiiinxea",
         "region": "il-jerusalem-1"
     }
+    object_storage = oci.object_storage.ObjectStorageClient(config, signer=signer)
+    namespace = object_storage.get_namespace().data
+    bucket_name = "assignment2"
+    file_object_name = ctx.RequestURL()
     if ctx.Method() == "GET":
         try:
             object_storage = oci.object_storage.ObjectStorageClient(config, signer=signer)
@@ -32,7 +36,7 @@ def handler(ctx, data: io.BytesIO = None):
                     ctx, response_data=obj.data.content,
                     headers={"Content-Type": obj.headers['Content-type']}
                 )
-            elif file_object_name.endswith("/read"):
+            elif file_object_name.endswith("/getcsv"):
                 obj = object_storage.get_object(namespace, bucket_name, 'db.csv')
                 return response.Response(
                     ctx, response_data=obj.data.content,
@@ -42,6 +46,29 @@ def handler(ctx, data: io.BytesIO = None):
                 error_500(ctx)
         except (Exception) as e:
             error_500(ctx)
+    elif ctx.Method() == "POST":
+        obj = object_storage.get_object(namespace, bucket_name, 'csv.html')
+        try:
+            body = json.loads(data.getvalue())
+            name = body.get("name")
+        except (Exception, ValueError) as ex:
+            print(str(ex))
+        return response.Response(
+            ctx, response_data=json.dumps(
+                {"Message": "Hello {0}".format(name),
+                 "ctx.Config" : dict(ctx.Config()),
+                 "ctx.Headers" : ctx.Headers(),
+                 "ctx.AppID" : ctx.AppID(),
+                 "ctx.FnID" : ctx.FnID(),
+                 "ctx.CallID" : ctx.CallID(),
+                 "ctx.Format" : ctx.Format(),
+                 "ctx.Deadline" : ctx.Deadline(),
+                 "ctx.RequestURL": ctx.RequestURL(),
+                 "ctx.Method": ctx.Method()},
+                sort_keys=True, indent=4),
+            headers={"Content-Type": "application/json"}
+)
+
     else:
         return response.Response(
             ctx, response_data="405  Method not allowed",

@@ -40,11 +40,12 @@ def handler(ctx, data: io.BytesIO = None):
                     headers={"Content-Type": obj.headers['Content-type']}
                 )
             elif endpoint.endswith("/getcsv"):
-                obj = object_storage.get_object(namespace, bucket_name, 'db.csv')
+                df = pd.read_csv(csv_api_url)
                 return response.Response(
-                    ctx, response_data=obj.data.content,
-                    headers={"Content-Type": obj.headers['Content-type']}
-                )
+                    ctx, response_data=json.dumps(
+                        {"Message": "Hello",
+                         "csv": df.to_string(),}),
+                    headers={"Content-Type": "application/json"})
             else:
                 error_500(ctx)
         except (Exception) as e:

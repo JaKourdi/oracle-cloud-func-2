@@ -44,7 +44,7 @@ def handler(ctx, data: io.BytesIO = None):
                 return response.Response(
                     ctx, response_data=json.dumps(
                         {"Message": "Hello",
-                         "csv": df.to_string(),}),
+                         "csv": df.to_string()}, sort_keys=True, indent=4),
                     headers={"Content-Type": "application/json"})
             else:
                 error_500(ctx)

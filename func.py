@@ -27,21 +27,13 @@ def handler(ctx, data: io.BytesIO = None):
             bucket_name = "assignment2"
             file_object_name = ctx.RequestURL()
             if file_object_name.endswith("/"):
-                logging.getLogger().info("Adding index.html to request URL " + file_object_name)
-                file_object_name += "index.html"
-                # strip off the first character of the URI (i.e. the /)
-                file_object_name = file_object_name[1:]
-
-                obj = object_storage.get_object(namespace, bucket_name, file_object_name)
+                obj = object_storage.get_object(namespace, bucket_name, 'index.html')
                 return response.Response(
                     ctx, response_data=obj.data.content,
                     headers={"Content-Type": obj.headers['Content-type']}
                 )
             elif file_object_name.endswith("/read"):
-                logging.getLogger().info("Adding index.html to request URL " + file_object_name)
-                file_object_name += "db.csv"
-                file_object_name = file_object_name[1:]
-                obj = object_storage.get_object(namespace, bucket_name, file_object_name)
+                obj = object_storage.get_object(namespace, bucket_name, 'db.csv')
                 return response.Response(
                     ctx, response_data=obj.data.content,
                     headers={"Content-Type": obj.headers['Content-type']}
@@ -58,7 +50,6 @@ def handler(ctx, data: io.BytesIO = None):
         )
 
 
-
 def error_500(ctx):
     return response.Response(
         ctx, response_data="500 Server error",
@@ -66,19 +57,49 @@ def error_500(ctx):
     )
 
 
-
-#POST– This creates a new record in the database.
+# POST– This creates a new record in the database.
 # GET– This request reads information sourced from a database.
 # PUT– This updates an object.
 # DELETE– This removes a record from the database.
-def route(request_type):
-    if request_type == 'GET':
+
+def new_record():
+    return
+def read_record():
+    return
+def update_record():
+    return
+def delete_record():
+    return
+
+
+def route(ctx):
+    m_method = ctx.Method()
+    if m_method == 'GET':
         return
-    elif request_type == 'POST':
+    elif m_method == 'POST':
         return
-    elif request_type == 'PUT':
+    elif m_method == 'PUT':
         return
-    elif request_type == 'DELETE':
+    elif m_method == 'DELETE':
         return
     else:
-        return error_500()
+        return error_500(ctx)
+
+
+
+def route(endpoint):
+    return
+
+
+def redirect(ctx):
+    m_method = ctx.Method()
+    if m_method == 'GET':
+        return
+    elif m_method == 'POST':
+        return
+    elif m_method == 'PUT':
+        return
+    elif m_method == 'DELETE':
+        return
+    else:
+        return error_500(ctx)

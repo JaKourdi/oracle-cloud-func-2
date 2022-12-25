@@ -51,11 +51,13 @@ def handler(ctx, data: io.BytesIO = None):
         try:
             body = json.loads(data.getvalue())
             name = body.get("name")
+            department = body.get("department")
+            birthday_month = body.get("birthday month")
         except (Exception, ValueError) as ex:
             print(str(ex))
         return response.Response(
             ctx, response_data=json.dumps(
-                {"Message": "Hello {0}".format(name),
+                {"Message": "Hello {0}, you work at {1} and your birthday is {2}".format(name,department, birthday_month),
                  "ctx.Config" : dict(ctx.Config()),
                  "ctx.Headers" : ctx.Headers(),
                  "ctx.AppID" : ctx.AppID(),

@@ -11,7 +11,7 @@ from fdk import response
 
 # create, read, update, and delete (CRUD)
 allowed_endpoint = ['', 'read', 'create', 'update', 'delete', 'listall']
-
+csv_api_url = "https://m7l2i2ximv4pqfi3xlea5yb53u.apigateway.il-jerusalem-1.oci.customer-oci.com/app2/getcsv"
 
 def handler(ctx, data: io.BytesIO = None):
     if None == ctx.RequestURL():
@@ -60,25 +60,27 @@ def handler(ctx, data: io.BytesIO = None):
             print(str(ex))
 
         obj = object_storage.get_object(namespace, bucket_name, 'db.csv')
-        data = pd.read_csv(obj.data.content)
-        data.get()
+        df = pd.read_csv(csv_api_url)
+        new_row = {'name':'Hyperion', 'department':24000, 'birthday month':'55days'}
+        df2 = df.append(new_row, ignore_index=True)
+        df2.to_csv()
+        object_storage.update_bucket(namespace, bucket_name, df2.to_csv())
         return response.Response(
-            ctx, response_data=json.dumps(
-                {"Message": "Hello {0}, you work at {1} and your birthday is {2}".format(name,department, birthday_month),
-                 "csv": data.to_string(),
-                 "ctx.Config" : dict(ctx.Config()),
-                 "ctx.Headers" : ctx.Headers(),
-                 "ctx.AppID" : ctx.AppID(),
-                 "ctx.FnID" : ctx.FnID(),
-                 "ctx.CallID" : ctx.CallID(),
-                 "ctx.Format" : ctx.Format(),
-                 "ctx.Deadline" : ctx.Deadline(),
-                 "ctx.RequestURL": ctx.RequestURL(),
-                 "ctx.Method": ctx.Method()},
-                sort_keys=True, indent=4),
-            headers={"Content-Type": "application/json"}
-)
-
+                ctx, response_data=json.dumps(
+                    {"Message": "Hello {0}, you work at {1} and your birthday is {2}".format(name,department, birthday_month),
+                     "csv": df.to_string(),
+                     "ctx.Config" : dict(ctx.Config()),
+                     "ctx.Headers" : ctx.Headers(),
+                     "ctx.AppID" : ctx.AppID(),
+                     "ctx.FnID" : ctx.FnID(),
+                     "ctx.CallID" : ctx.CallID(),
+                     "ctx.Format" : ctx.Format(),
+                     "ctx.Deadline" : ctx.Deadline(),
+                     "ctx.RequestURL": ctx.RequestURL(),
+                     "ctx.Method": ctx.Method()},
+                    sort_keys=True, indent=4),
+                headers={"Content-Type": "application/json"}
+        )
     else:
         return response.Response(
             ctx, response_data="405  Method not allowed",

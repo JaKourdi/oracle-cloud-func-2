@@ -68,7 +68,6 @@ def handler(ctx, data: io.BytesIO = None):
         delete_record(ctx)
 
 
-
     else:
         return response.Response(
             ctx, response_data="405  Method not allowed",
@@ -176,13 +175,14 @@ def update_record(ctx, data):
 def delete_record(ctx):
     df = pd.read_csv(csv_api_url)
     df.drop(0, axis=0, inplace=True)
+    object_storage.put_object(namespace, bucket_name, 'db.csv', df.to_csv())
     return response.Response(
-        ctx, response_data=json.dumps(
-            {
-                "Message": "deleted the first row"},
-            sort_keys=True, indent=4),
-        headers={"Content-Type": "application/json"}
-    )
+            ctx, response_data=json.dumps(
+                {
+                    "Message": "deleted the first row"},
+                sort_keys=True, indent=4),
+            headers={"Content-Type": "application/json"}
+        )
 
 
 def read_data(data):

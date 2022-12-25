@@ -80,7 +80,7 @@ def new_record(ctx, data):
         department = body.get("department")
         birthday = body.get("birthday")
         df = pd.read_csv(csv_api_url)
-        new_row = {'name': name, 'department': department, 'birthday month': birthday}
+        new_row = {'name': name, 'department': department, 'birthday': birthday}
         df2 = df.append(new_row, ignore_index=True)
         df2.to_csv()
         object_storage.put_object(namespace, bucket_name, 'db.csv', df2.to_csv())

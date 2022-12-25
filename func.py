@@ -64,7 +64,7 @@ def handler(ctx, data: io.BytesIO = None):
         new_row = {'name':'Hyperion', 'department':24000, 'birthday month':'55days'}
         df2 = df.append(new_row, ignore_index=True)
         df2.to_csv()
-        object_storage.update_bucket(namespace, bucket_name, df2.to_csv())
+        object_storage.put_object(namespace, bucket_name, 'db.csv' ,df2.to_csv())
         return response.Response(
                 ctx, response_data=json.dumps(
                     {"Message": "Hello {0}, you work at {1} and your birthday is {2}".format(name,department, birthday_month),
